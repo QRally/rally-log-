@@ -49,9 +49,9 @@
         footer { margin-top: 50px; padding: 20px; background: #111; border-top: 1px solid #333; font-size: 0.8rem; color: #aaa; line-height: 1.6; }
         .guide-title { color: var(--yellow); font-weight: bold; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; }
         
-        /* New Tire Section CSS */
-        .tire-log { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 20px; }
-        .tire-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
+        /* New Tyre Section CSS */
+        .tyre-log { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 20px; }
+        .tyre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
     </style>
 </head>
 <body>
@@ -78,15 +78,15 @@
 
     <div id="container"></div>
 
-    <div class="tire-log">
+    <div class="tyre-log">
         <h3 style="color:var(--blue); margin-top:0; font-style:italic; font-size:0.9rem;">🏁 STAGE TIRE PRESSURES (BAR)</h3>
-        <div class="tire-grid">
-            <div><label style="font-size:0.6rem;">FRONT L</label><input type="number" id="tireFL" class="form-input" placeholder="0.0" step="0.1"></div>
-            <div><label style="font-size:0.6rem;">FRONT R</label><input type="number" id="tireFR" class="form-input" placeholder="0.0" step="0.1"></div>
-            <div><label style="font-size:0.6rem;">REAR L</label><input type="number" id="tireRL" class="form-input" placeholder="0.0" step="0.1"></div>
-            <div><label style="font-size:0.6rem;">REAR R</label><input type="number" id="tireRR" class="form-input" placeholder="0.0" step="0.1"></div>
+        <div class="tyre-grid">
+            <div><label style="font-size:0.6rem;">FRONT L</label><input type="number" id="tyreFL" class="form-input" placeholder="0.0" step="0.1"></div>
+            <div><label style="font-size:0.6rem;">FRONT R</label><input type="number" id="tyreFR" class="form-input" placeholder="0.0" step="0.1"></div>
+            <div><label style="font-size:0.6rem;">REAR L</label><input type="number" id="tyreRL" class="form-input" placeholder="0.0" step="0.1"></div>
+            <div><label style="font-size:0.6rem;">REAR R</label><input type="number" id="tyreRR" class="form-input" placeholder="0.0" step="0.1"></div>
         </div>
-        <button class="btn" onclick="logTires()" style="width:100%; margin-top:10px; background:var(--blue);">LOG PRESSURES</button>
+        <button class="btn" onclick="(logtyres)" style="width:100%; margin-top:10px; background:var(--blue);">LOG PRESSURES</button>
     </div>
 
     <div class="fuel-calc">
