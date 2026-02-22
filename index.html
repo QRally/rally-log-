@@ -24,7 +24,7 @@
         #countdown { font-size: 3.5rem; font-weight: bold; display: block; }
         
         .content { padding: 15px; }
-        .btn { background: #222; border: 1px solid #444; color: #fff; padding: 12px 15px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .btn { background: #222; border: 1px solid #444; color: #fff; padding: 12px 15px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; border: 1px solid #333;}
         
         .toggle-container { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
@@ -37,7 +37,7 @@
         .form-box { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 20px; display: none; }
         .form-input, .form-select { width: 100%; padding: 12px; margin-bottom: 10px; background: #0d0d0d; color: #fff; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; }
 
-        #searchBar { width: 100%; padding: 15px; margin-bottom: 20px; background: #1a1a1a; border: 1px solid var(--yellow); color: #fff; border-radius: 8px; box-sizing: border-box; }
+        #searchBar { width: 100%; padding: 15px; margin-bottom: 20px; background: #1a1a1a; border: 1px solid var(--yellow); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 1rem;}
         
         .spec-card { background: var(--card-bg); border-left: 6px solid #444; border-radius: 8px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .spec-card.completed { opacity: 0.3; filter: grayscale(1); }
@@ -116,12 +116,8 @@
 </div>
 
 <footer>
-    <p><b>RODGE QRALLY SYSTEM v2.6 (#107-B)</b></p>
-    <p>Data stored locally in browser memory. Search filters both labels and values.</p>
-    <p><b>Priority Guide:</b><br>
-    <span style="color: var(--red)">■</span> <b>CRITICAL:</b> Torque/Pressure.<br>
-    <span style="color: var(--orange)">■</span> <b>HIGH:</b> Tuning.<br>
-    <span style="color: var(--blue)">■</span> <b>STANDARD:</b> Fluids.</p>
+    <p><b>RODGE QRALLY SYSTEM v2.7 (#107-B)</b></p>
+    <p>Data stored locally. Search filters cards by label or value.</p>
 </footer>
 
 <div id="qr-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; flex-direction:column; justify-content:center; align-items:center;">
@@ -160,7 +156,7 @@
             const isDone = savedChecks.includes(index.toString()) ? 'completed' : '';
             const isCustom = index >= factoryData.length;
             return `
-                <div class="spec-card ${s.p} ${isDone}" id="card-${index}" style="display: flex;">
+                <div class="spec-card ${s.p} ${isDone}" id="card-${index}">
                     <div onclick="toggleCheck(${index})" style="flex:1; cursor:pointer;">
                         <div class="spec-label">${s.label}</div>
                         <div class="spec-value">${s.val}</div>
@@ -172,15 +168,26 @@
                 </div>
             `;
         }).join('');
-        filter(); // Re-apply search filter after rendering
+        
+        // Final search sync
+        filter(); 
     }
 
     function filter() {
-        let q = document.getElementById('searchBar').value.toLowerCase();
+        const searchInput = document.getElementById('searchBar');
+        if (!searchInput) return;
+        
+        let q = searchInput.value.toLowerCase();
         let cards = document.getElementsByClassName('spec-card');
-        for (let c of cards) {
-            // Direct visibility toggle for reliability
-            c.style.display = c.innerText.toLowerCase().includes(q) ? "flex" : "none";
+        
+        for (let i = 0; i < cards.length; i++) {
+            let cardContent = cards[i].innerText.toLowerCase();
+            // Force display style change
+            if (cardContent.includes(q)) {
+                cards[i].style.display = "flex";
+            } else {
+                cards[i].style.display = "none";
+            }
         }
     }
 
@@ -212,12 +219,12 @@
 
     function resetChecklist() { if(confirm("Reset checks?")) { localStorage.removeItem('rallyChecks'); renderSpecs(); } }
     function clearCustomSpecs() { if(confirm("Wipe custom?")) { localStorage.removeItem('customSpecs'); renderSpecs(); } }
-    function startClock() { timerInterval = setInterval(() => { if (!isPaused && timeLeft > 0) { timeLeft--; updateTimer(); } }, 1000); }
+    function startClock() { if(timerInterval) clearInterval(timerInterval); timerInterval = setInterval(() => { if (!isPaused && timeLeft > 0) { timeLeft--; updateTimer(); } }, 1000); }
     function updateTimer() {
         const d = document.getElementById('countdown');
         let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
         d.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-        if (timeLeft <= 300) d.style.color = 'var(--red)';
+        if (timeLeft <= 300) d.style.color = 'var(--red)'; else d.style.color = 'var(--neon-green)';
     }
     function toggleTimer() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE"; }
     function resetTimer() { timeLeft = 1800; isPaused = false; updateTimer(); }
