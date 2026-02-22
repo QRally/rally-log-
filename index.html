@@ -1,37 +1,202 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Peugeot 107 Maintenance Portal</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRally | #107-B</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
-        .spec-card { background: #f4f4f4; padding: 15px; border-left: 5px solid #0056b3; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
+        :root {
+            --bg: #0d0d0d;
+            --card-bg: #1a1a1a;
+            --yellow: #f1c40f;
+            --red: #e74c3c;
+            --blue: #3498db;
+            --orange: #e67e22;
+            --neon-green: #00ff00;
+            --done-grey: #333;
+        }
+
+        body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; padding: 15px; margin: 0; }
+        
+        #timer-banner {
+            background: #000; color: var(--neon-green); padding: 20px; text-align: center;
+            font-family: 'Courier New', Courier, monospace; border: 1px solid #333; border-radius: 12px; margin-bottom: 25px;
+        }
+        #countdown { font-size: 3.5rem; font-weight: bold; display: block; margin-bottom: 10px; }
+        .controls { display: flex; justify-content: center; gap: 10px; }
+        .btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .timer-low { color: var(--red) !important; animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        #qr-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; }
+        #qr-code { background: #fff; padding: 20px; border-radius: 8px; }
+
+        header { border-bottom: 2px solid var(--yellow); margin-bottom: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-end; }
+        h1 { color: var(--yellow); text-transform: uppercase; margin: 0; font-size: 2.2rem; font-style: italic; }
+        #searchBar { width: 100%; padding: 15px; margin-bottom: 20px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
+
+        .spec-card { 
+            background: var(--card-bg); border-left: 6px solid #444; border-radius: 8px; 
+            padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.3s ease;
+        }
+        .spec-card.completed { opacity: 0.4; border-left-color: var(--done-grey) !important; filter: grayscale(1); }
+        .critical { border-left-color: var(--red); }
+        .high { border-left-color: var(--orange); }
+        .standard { border-left-color: var(--blue); }
+
+        .spec-label { font-size: 0.75rem; color: #888; text-transform: uppercase; }
+        .spec-value { font-family: 'Courier New', monospace; font-size: 1.5rem; font-weight: bold; color: var(--yellow); }
+        
+        .check-box { width: 30px; height: 30px; border: 2px solid #444; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .completed .check-box { background: var(--neon-green); border-color: var(--neon-green); color: #000; }
+        .completed .check-box::after { content: '✔'; font-weight: bold; }
+
+        .history-item { border-bottom: 1px solid #222; padding: 10px 0; color: #ccc; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <h1>🚗 Peugeot 107 Maintenance Log</h1>
-    
-    <div class="spec-card">
-        <h3>Quick Specs</h3>
-        <p><strong>Engine Oil:</strong> 3.1 Liters (0W-20 or 5W-30)</p>
-        <p><strong>Wheel Bolts:</strong> 103 Nm</p>
-    </div>
 
-    <h3>Service History</h3>
-    <table>
-        <tr>
-            <th>Date</th>
-            <th>Mileage</th>
-            <th>Task</th>
-        </tr>
-        <tr>
-            <td>2026-02-22</td>
-            <td>--</td>
-            <td>Initial Log Setup on GitHub</td>
-        </tr>
-    </table>
+<div id="timer-banner">
+    <div id="countdown">30:00</div>
+    <div class="controls">
+        <button class="btn" onclick="toggleTimer()" id="pauseBtn">PAUSE</button>
+        <button class="btn" onclick="resetTimer()">RESET</button>
+        <button class="btn" onclick="showQR()">SHARE</button>
+    </div>
+</div>
+
+<div id="qr-modal">
+    <div id="qr-code"></div>
+    <button class="btn" style="margin-top:20px; background:var(--red);" onclick="closeQR()">CLOSE</button>
+</div>
+
+<header>
+    <h1>QRALLY</h1>
+    <div style="font-size: 0.7rem; color: #666; text-align: right;">CHASSIS: #107-B<br>2026 UPDATE</div>
+</header>
+
+<input type="text" id="searchBar" placeholder="Search specs..." onkeyup="filter()">
+
+<div id="container"></div>
+
+<div id="history-section" style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; margin-bottom: 50px;">
+    <h2 style="color: var(--yellow); font-style: italic;">MAINTENANCE LOG</h2>
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <input type="text" id="logNote" placeholder="Service note..." style="flex: 2; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #fff;">
+        <button class="btn" onclick="addLogEntry()" style="background: var(--neon-green); color: #000;">ADD</button>
+    </div>
+    <div id="logList"></div>
+</div>
+
+<script>
+    const data = [
+        { label: "Wheel Nut Torque", val: "110 Nm", p: "critical" },
+        { label: "Cold Tire Pressure", val: "2.0 BAR", p: "critical" },
+        { label: "Engine Oil (5W-30)", val: "3.1 Liters", p: "standard" },
+        { label: "Gearbox Oil (75W-90)", val: "1.7 Liters", p: "standard" },
+        { label: "Spark Plugs", val: "25 Nm", p: "high" },
+        { label: "Coolant", val: "4.5 Liters", p: "standard" }
+    ];
+
+    let timeLeft = 1800;
+    let isPaused = false;
+    let timerInterval;
+
+    function init() {
+        const container = document.getElementById('container');
+        const savedChecks = JSON.parse(localStorage.getItem('rallyChecks') || "[]");
+
+        container.innerHTML = data.map((s, index) => {
+            const isDone = savedChecks.includes(index.toString()) ? 'completed' : '';
+            return `
+                <div class="spec-card ${s.p} ${isDone}" id="card-${index}" onclick="toggleCheck(${index})">
+                    <div>
+                        <div class="spec-label">${s.label}</div>
+                        <div class="spec-value">${s.val}</div>
+                    </div>
+                    <div class="check-box"></div>
+                </div>
+            `;
+        }).join('');
+        
+        renderHistory();
+        startClock();
+    }
+
+    function toggleCheck(index) {
+        const card = document.getElementById(`card-${index}`);
+        card.classList.toggle('completed');
+        const completed = Array.from(document.querySelectorAll('.completed')).map(c => c.id.replace('card-', ''));
+        localStorage.setItem('rallyChecks', JSON.stringify(completed));
+    }
+
+    function startClock() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (!isPaused && timeLeft > 0) {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 300) document.getElementById('countdown').classList.add('timer-low');
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const display = document.getElementById('countdown');
+        let mins = Math.floor(timeLeft / 60);
+        let secs = timeLeft % 60;
+        display.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    function toggleTimer() { 
+        isPaused = !isPaused; 
+        document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE"; 
+    }
+    
+    function resetTimer() {
+        timeLeft = 1800; isPaused = false;
+        document.getElementById('pauseBtn').innerText = "PAUSE";
+        document.getElementById('countdown').classList.remove('timer-low');
+        updateTimerDisplay();
+    }
+
+    function filter() {
+        let q = document.getElementById('searchBar').value.toLowerCase();
+        let cards = document.getElementsByClassName('spec-card');
+        for (let c of cards) { c.classList.toggle('hidden', !c.innerText.toLowerCase().includes(q)); }
+    }
+
+    function addLogEntry() {
+        const note = document.getElementById('logNote').value;
+        if (!note) return;
+        const entry = { date: new Date().toLocaleDateString(), text: note };
+        const history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
+        history.unshift(entry);
+        localStorage.setItem('rallyHistory', JSON.stringify(history));
+        document.getElementById('logNote').value = "";
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
+        document.getElementById('logList').innerHTML = history.map(item => `
+            <div class="history-item"><span style="color:var(--yellow)">[${item.date}]</span> ${item.text}</div>
+        `).join('');
+    }
+
+    function showQR() {
+        document.getElementById('qr-modal').style.display = 'flex';
+        document.getElementById('qr-code').innerHTML = "";
+        new QRCode(document.getElementById("qr-code"), { text: window.location.href, width: 200, height: 200 });
+    }
+
+    function closeQR() { document.getElementById('qr-modal').style.display = 'none'; }
+
+    window.onload = init;
+</script>
 </body>
 </html>
 
