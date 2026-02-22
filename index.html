@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QRALLY | Peugeot #107-B</title>
+    <title>QRALLY | #107-B</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
@@ -13,9 +13,9 @@
         }
         body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; padding: 0; margin: 0; padding-bottom: 50px; }
         
-        /* New Hero Header */
         .hero-banner { 
-            width: 100%; height: 250px; background: url('https://raw.githubusercontent.com/QRally/rally-log-/main/1000022227.jpg') center/cover no-repeat;
+            width: 100%; height: 250px; 
+            background: url('1000022227.jpg') center/cover no-repeat;
             border-bottom: 4px solid var(--yellow); position: relative;
         }
         .hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 20px; }
@@ -26,9 +26,17 @@
         .content { padding: 15px; }
         .btn { background: #222; border: 1px solid #444; color: #fff; padding: 12px 15px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
         
-        /* How-To Section */
-        .guide-box { background: #111; border: 1px dashed #444; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; color: #aaa; line-height: 1.4; }
-        .guide-box b { color: var(--yellow); }
+        /* Toggle Switch Styling */
+        .toggle-container { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--blue); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .form-box { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 20px; display: none; }
+        .form-input, .form-select { width: 100%; padding: 12px; margin-bottom: 10px; background: #0d0d0d; color: #fff; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; }
 
         #searchBar { width: 100%; padding: 15px; margin-bottom: 20px; background: #1a1a1a; border: 1px solid var(--yellow); color: #fff; border-radius: 8px; box-sizing: border-box; }
         
@@ -40,7 +48,9 @@
         
         .spec-label { font-size: 0.75rem; color: #888; text-transform: uppercase; }
         .spec-value { font-family: 'Courier New', monospace; font-size: 1.5rem; font-weight: bold; color: var(--yellow); }
-        .check-box { width: 30px; height: 30px; border: 2px solid #444; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+        .del-btn { color: var(--red); background: none; border: none; font-size: 1.3rem; cursor: pointer; margin-left: 15px; display: none; }
+        
+        .check-box { width: 30px; height: 30px; border: 2px solid #444; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .completed .check-box { background: var(--neon-green); color: #000; border-color: var(--neon-green); }
         .completed .check-box::after { content: '✔'; font-weight: bold; }
         
@@ -62,20 +72,33 @@
     <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
         <button class="btn" onclick="toggleTimer()" id="pauseBtn">PAUSE</button>
         <button class="btn" onclick="resetTimer()">RESET</button>
-        <button class="btn" onclick="showQR()">SHARE SITE</button>
+        <button class="btn" onclick="showQR()">SHARE</button>
     </div>
 </div>
 
 <div class="content">
-    <div class="guide-box">
-        <b>HOW TO USE:</b><br>
-        1. ⏱ <b>Timer:</b> Start the countdown when service begins.<br>
-        2. ✅ <b>Checklist:</b> Tap any card to mark a task as complete.<br>
-        3. 🔍 <b>Search:</b> Use the bar below to find specific torques or fluids.<br>
-        4. 📝 <b>Log:</b> Scroll to the bottom to record oil changes or repairs.
+    <div class="toggle-container">
+        <span style="font-size: 0.8rem; font-weight: bold; color: var(--blue);">🔧 EDIT / SERVICE MODE</span>
+        <label class="switch">
+            <input type="checkbox" id="editToggle" onclick="toggleEditMode()">
+            <span class="slider"></span>
+        </label>
     </div>
 
-    <input type="text" id="searchBar" placeholder="🔍 Find torque, oil, or spring rates..." onkeyup="filter()">
+    <div id="addForm" class="form-box">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <input type="text" id="newLabel" class="form-input" placeholder="Label">
+            <input type="text" id="newVal" class="form-input" placeholder="Value">
+        </div>
+        <select id="newPriority" class="form-select">
+            <option value="standard">Standard (Blue)</option>
+            <option value="high">High (Orange)</option>
+            <option value="critical">Critical (Red)</option>
+        </select>
+        <button class="btn" onclick="addNewSection()" style="width:100%; background:var(--blue);">+ ADD TO LIST</button>
+    </div>
+
+    <input type="text" id="searchBar" placeholder="🔍 Search specs..." onkeyup="filter()">
 
     <div id="container"></div>
 
@@ -87,17 +110,16 @@
     <div id="history-section" style="border-top: 1px solid #333; padding-top: 20px;">
         <h2 style="color:var(--yellow); font-style:italic;">MAINTENANCE LOG</h2>
         <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <input type="text" id="logNote" placeholder="Service note..." style="width:100%; padding:12px; background:#1a1a1a; border:1px solid #444; border-radius:6px; color:#fff;">
+            <input type="text" id="logNote" placeholder="Service note..." class="form-input" style="margin-bottom:0;">
             <button class="btn" onclick="addLogEntry()" style="background:var(--neon-green); color:#000;">ADD</button>
         </div>
         <div id="logList"></div>
     </div>
 </div>
 
-<div id="qr-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1000; flex-direction:column; justify-content:center; align-items:center;">
+<div id="qr-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; flex-direction:column; justify-content:center; align-items:center;">
     <div id="qr-code" style="background:#fff; padding:20px; border-radius:8px;"></div>
-    <p style="text-align:center; padding: 20px;">Screenshot this QR code to print a new sticker for the car!</p>
-    <button class="btn" style="background:var(--red);" onclick="document.getElementById('qr-modal').style.display='none'">CLOSE</button>
+    <button class="btn" style="margin-top:20px; background:var(--red);" onclick="document.getElementById('qr-modal').style.display='none'">CLOSE</button>
 </div>
 
 <script>
@@ -114,24 +136,55 @@
 
     function init() { renderSpecs(); renderHistory(); startClock(); }
 
+    function toggleEditMode() {
+        const isEdit = document.getElementById('editToggle').checked;
+        document.getElementById('addForm').style.display = isEdit ? 'block' : 'none';
+        const delBtns = document.querySelectorAll('.del-btn');
+        delBtns.forEach(btn => btn.style.display = isEdit ? 'inline-block' : 'none');
+    }
+
     function renderSpecs() {
         const container = document.getElementById('container');
         const savedChecks = JSON.parse(localStorage.getItem('rallyChecks') || "[]");
         const customSpecs = JSON.parse(localStorage.getItem('customSpecs') || "[]");
         const fullData = [...factoryData, ...customSpecs];
+        const isEdit = document.getElementById('editToggle').checked;
 
         container.innerHTML = fullData.map((s, index) => {
             const isDone = savedChecks.includes(index.toString()) ? 'completed' : '';
+            const isCustom = index >= factoryData.length;
             return `
-                <div class="spec-card ${s.p} ${isDone}" id="card-${index}" onclick="toggleCheck(${index})">
-                    <div style="flex:1;">
+                <div class="spec-card ${s.p} ${isDone}" id="card-${index}">
+                    <div onclick="toggleCheck(${index})" style="flex:1; cursor:pointer;">
                         <div class="spec-label">${s.label}</div>
                         <div class="spec-value">${s.val}</div>
                     </div>
-                    <div class="check-box"></div>
+                    <div style="display:flex; align-items:center;">
+                        <div class="check-box" onclick="toggleCheck(${index})"></div>
+                        ${isCustom ? `<button class="del-btn" style="display:${isEdit ? 'inline-block' : 'none'}" onclick="deleteSingle(${index - factoryData.length})">🗑</button>` : ''}
+                    </div>
                 </div>
             `;
         }).join('');
+    }
+
+    function addNewSection() {
+        const label = document.getElementById('newLabel').value.trim();
+        const val = document.getElementById('newVal').value.trim();
+        const p = document.getElementById('newPriority').value;
+        if (!label || !val) return;
+        const customSpecs = JSON.parse(localStorage.getItem('customSpecs') || "[]");
+        customSpecs.push({ label, val, p });
+        localStorage.setItem('customSpecs', JSON.stringify(customSpecs));
+        document.getElementById('newLabel').value = ""; document.getElementById('newVal').value = "";
+        renderSpecs();
+    }
+
+    function deleteSingle(idx) {
+        let custom = JSON.parse(localStorage.getItem('customSpecs') || "[]");
+        custom.splice(idx, 1);
+        localStorage.setItem('customSpecs', JSON.stringify(custom));
+        renderSpecs();
     }
 
     function toggleCheck(index) {
@@ -141,13 +194,8 @@
         localStorage.setItem('rallyChecks', JSON.stringify(completed));
     }
 
-    function resetChecklist() {
-        if(confirm("Reset all marks?")) { localStorage.removeItem('rallyChecks'); renderSpecs(); }
-    }
-
-    function clearCustomSpecs() {
-        if(confirm("Wipe all custom items?")) { localStorage.removeItem('customSpecs'); renderSpecs(); }
-    }
+    function resetChecklist() { if(confirm("Reset all checks?")) { localStorage.removeItem('rallyChecks'); renderSpecs(); } }
+    function clearCustomSpecs() { if(confirm("Wipe all custom items?")) { localStorage.removeItem('customSpecs'); renderSpecs(); } }
 
     function filter() {
         let q = document.getElementById('searchBar').value.toLowerCase();
@@ -156,6 +204,7 @@
     }
 
     function startClock() {
+        if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => { if (!isPaused && timeLeft > 0) { timeLeft--; updateTimer(); } }, 1000);
     }
 
