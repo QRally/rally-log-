@@ -7,98 +7,92 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --bg: #0d0d0d;
-            --card-bg: #1a1a1a;
-            --yellow: #f1c40f;
-            --red: #e74c3c;
-            --blue: #3498db;
-            --orange: #e67e22;
-            --neon-green: #00ff00;
-            --done-grey: #333;
+            --bg: #0d0d0d; --card-bg: #1a1a1a; --yellow: #f1c40f;
+            --red: #e74c3c; --blue: #3498db; --orange: #e67e22;
+            --neon-green: #00ff00; --done-grey: #333;
         }
-
         body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; padding: 15px; margin: 0; padding-bottom: 50px; }
         
-        #timer-banner {
-            background: #000; color: var(--neon-green); padding: 20px; text-align: center;
-            font-family: 'Courier New', Courier, monospace; border: 1px solid #333; border-radius: 12px; margin-bottom: 25px;
-        }
+        #timer-banner { background: #000; color: var(--neon-green); padding: 20px; text-align: center; font-family: 'Courier New', monospace; border: 1px solid #333; border-radius: 12px; margin-bottom: 25px; }
         #countdown { font-size: 3.5rem; font-weight: bold; display: block; margin-bottom: 10px; }
-        .controls { display: flex; justify-content: center; gap: 10px; }
         .btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
-        .timer-low { color: var(--red) !important; animation: blinker 1s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0; } }
-
-        #qr-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; }
-        #qr-code { background: #fff; padding: 20px; border-radius: 8px; }
-
+        
         header { border-bottom: 2px solid var(--yellow); margin-bottom: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-end; }
         h1 { color: var(--yellow); text-transform: uppercase; margin: 0; font-size: 2.2rem; font-style: italic; }
         
-        /* New Section Form */
+        #searchBar { width: 100%; padding: 15px; margin-bottom: 20px; background: #1a1a1a; border: 1px solid var(--yellow); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        
         .form-box { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; }
-        .form-input { width: 100%; padding: 10px; margin-bottom: 10px; background: #0d0d0d; color: #fff; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; }
-
-        .spec-card { 
-            background: var(--card-bg); border-left: 6px solid #444; border-radius: 8px; 
-            padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
-            transition: all 0.3s ease; position: relative;
-        }
-        .spec-card.completed { opacity: 0.4; border-left-color: var(--done-grey) !important; filter: grayscale(1); }
+        .form-input, .form-select { width: 100%; padding: 12px; margin-bottom: 10px; background: #0d0d0d; color: #fff; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; }
+        
+        .spec-card { background: var(--card-bg); border-left: 6px solid #444; border-radius: 8px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .spec-card.completed { opacity: 0.3; filter: grayscale(1); }
         .critical { border-left-color: var(--red); }
         .high { border-left-color: var(--orange); }
         .standard { border-left-color: var(--blue); }
-
+        
         .spec-label { font-size: 0.75rem; color: #888; text-transform: uppercase; }
         .spec-value { font-family: 'Courier New', monospace; font-size: 1.5rem; font-weight: bold; color: var(--yellow); }
         
         .check-box { width: 30px; height: 30px; border: 2px solid #444; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .completed .check-box { background: var(--neon-green); border-color: var(--neon-green); color: #000; }
+        .completed .check-box { background: var(--neon-green); color: #000; border-color: var(--neon-green); }
         .completed .check-box::after { content: '✔'; font-weight: bold; }
-
-        .del-btn { color: var(--red); background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: 15px; padding: 5px; }
+        
+        .del-btn { color: var(--red); background: none; border: none; font-size: 1.3rem; cursor: pointer; margin-left: 15px; }
         .history-item { border-bottom: 1px solid #222; padding: 10px 0; color: #ccc; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div id="timer-banner">
     <div id="countdown">30:00</div>
-    <div class="controls">
+    <div class="controls" style="display:flex; justify-content:center; gap:10px;">
         <button class="btn" onclick="toggleTimer()" id="pauseBtn">PAUSE</button>
         <button class="btn" onclick="resetTimer()">RESET</button>
         <button class="btn" onclick="showQR()">SHARE</button>
     </div>
 </div>
 
-<div id="qr-modal">
-    <div id="qr-code"></div>
-    <button class="btn" style="margin-top:20px; background:var(--red);" onclick="closeQR()">CLOSE</button>
-</div>
-
 <header>
     <h1>QRALLY</h1>
-    <div style="font-size: 0.7rem; color: #666; text-align: right;">CHASSIS: #107-B<br>2026 UPDATE</div>
+    <div style="font-size:0.7rem; color:#666; text-align:right;">CHASSIS: #107-B<br>2026 UPDATE</div>
 </header>
 
+<input type="text" id="searchBar" placeholder="🔍 Search specs..." onkeyup="filter()">
+
 <div class="form-box">
-    <input type="text" id="newLabel" class="form-input" placeholder="Label (e.g. Brake Bleed)">
-    <input type="text" id="newVal" class="form-input" placeholder="Value (e.g. DOT4)">
-    <div style="display: flex; gap: 10px;">
-        <button class="btn" onclick="addNewSection()" style="flex: 2; background: var(--blue);">+ ADD SPEC</button>
-        <button class="btn" onclick="clearCustomSpecs()" style="flex: 1; background: var(--red); font-size: 0.6rem;">WIPE CUSTOM</button>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <input type="text" id="newLabel" class="form-input" placeholder="Label">
+        <input type="text" id="newVal" class="form-input" placeholder="Value">
     </div>
+    <select id="newPriority" class="form-select">
+        <option value="standard">Standard (Blue)</option>
+        <option value="high">High (Orange)</option>
+        <option value="critical">Critical (Red)</option>
+    </select>
+    <button class="btn" onclick="addNewSection()" style="width:100%; background:var(--blue);">+ ADD TO LIST</button>
 </div>
 
 <div id="container"></div>
 
-<div id="history-section" style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
-    <h2 style="color: var(--yellow); font-style: italic;">MAINTENANCE LOG</h2>
-    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+<div style="display: flex; gap: 10px; margin: 20px 0;">
+    <button class="btn" onclick="resetChecklist()" style="flex: 1; background: #333;">🔄 RESET CHECKLIST</button>
+    <button class="btn" onclick="clearCustomSpecs()" style="flex: 1; background: var(--red);">🗑 WIPE CUSTOM</button>
+</div>
+
+<div id="history-section" style="border-top: 1px solid #333; padding-top: 20px;">
+    <h2 style="color:var(--yellow); font-style:italic;">MAINTENANCE LOG</h2>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
         <input type="text" id="logNote" placeholder="Service note..." class="form-input" style="margin-bottom:0;">
-        <button class="btn" onclick="addLogEntry()" style="background: var(--neon-green); color: #000;">ADD</button>
+        <button class="btn" onclick="addLogEntry()" style="background:var(--neon-green); color:#000;">ADD</button>
     </div>
     <div id="logList"></div>
+</div>
+
+<div id="qr-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; flex-direction:column; justify-content:center; align-items:center;">
+    <div id="qr-code" style="background:#fff; padding:20px; border-radius:8px;"></div>
+    <button class="btn" style="margin-top:20px; background:var(--red);" onclick="document.getElementById('qr-modal').style.display='none'">CLOSE</button>
 </div>
 
 <script>
@@ -111,15 +105,9 @@
         { label: "Coolant", val: "4.5 Liters", p: "standard" }
     ];
 
-    let timeLeft = 1800;
-    let isPaused = false;
-    let timerInterval;
+    let timeLeft = 1800, isPaused = false, timerInterval;
 
-    function init() {
-        renderSpecs();
-        renderHistory();
-        startClock();
-    }
+    function init() { renderSpecs(); renderHistory(); startClock(); }
 
     function renderSpecs() {
         const container = document.getElementById('container');
@@ -130,9 +118,8 @@
         container.innerHTML = fullData.map((s, index) => {
             const isDone = savedChecks.includes(index.toString()) ? 'completed' : '';
             const isCustom = index >= factoryData.length;
-            
             return `
-                <div class="spec-card ${s.p || 'standard'} ${isDone}" id="card-${index}">
+                <div class="spec-card ${s.p} ${isDone}" id="card-${index}">
                     <div onclick="toggleCheck(${index})" style="flex:1; cursor:pointer;">
                         <div class="spec-label">${s.label}</div>
                         <div class="spec-value">${s.val}</div>
@@ -146,24 +133,36 @@
         }).join('');
     }
 
+    function toggleCheck(index) {
+        const card = document.getElementById(`card-${index}`);
+        card.classList.toggle('completed');
+        const completed = Array.from(document.querySelectorAll('.completed')).map(c => c.id.replace('card-', ''));
+        localStorage.setItem('rallyChecks', JSON.stringify(completed));
+    }
+
+    function resetChecklist() {
+        if(confirm("Reset all check marks?")) {
+            localStorage.removeItem('rallyChecks');
+            renderSpecs();
+        }
+    }
+
     function addNewSection() {
         const label = document.getElementById('newLabel').value.trim();
         const val = document.getElementById('newVal').value.trim();
+        const p = document.getElementById('newPriority').value;
         if (!label || !val) return;
-
         const customSpecs = JSON.parse(localStorage.getItem('customSpecs') || "[]");
-        customSpecs.push({ label, val, p: "standard" });
+        customSpecs.push({ label, val, p });
         localStorage.setItem('customSpecs', JSON.stringify(customSpecs));
-
-        document.getElementById('newLabel').value = "";
-        document.getElementById('newVal').value = "";
+        document.getElementById('newLabel').value = ""; document.getElementById('newVal').value = "";
         renderSpecs();
     }
 
-    function deleteSingle(customIndex) {
-        let customSpecs = JSON.parse(localStorage.getItem('customSpecs') || "[]");
-        customSpecs.splice(customIndex, 1);
-        localStorage.setItem('customSpecs', JSON.stringify(customSpecs));
+    function deleteSingle(idx) {
+        let custom = JSON.parse(localStorage.getItem('customSpecs') || "[]");
+        custom.splice(idx, 1);
+        localStorage.setItem('customSpecs', JSON.stringify(custom));
         renderSpecs();
     }
 
@@ -174,59 +173,38 @@
         }
     }
 
-    function toggleCheck(index) {
-        const card = document.getElementById(`card-${index}`);
-        card.classList.toggle('completed');
-        const completed = Array.from(document.querySelectorAll('.completed')).map(c => c.id.replace('card-', ''));
-        localStorage.setItem('rallyChecks', JSON.stringify(completed));
+    function filter() {
+        let q = document.getElementById('searchBar').value.toLowerCase();
+        let cards = document.getElementsByClassName('spec-card');
+        for (let c of cards) { c.classList.toggle('hidden', !c.innerText.toLowerCase().includes(q)); }
     }
 
     function startClock() {
         if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            if (!isPaused && timeLeft > 0) {
-                timeLeft--;
-                updateTimerDisplay();
-                if (timeLeft <= 300) document.getElementById('countdown').classList.add('timer-low');
-            }
-        }, 1000);
+        timerInterval = setInterval(() => { if (!isPaused && timeLeft > 0) { timeLeft--; updateTimer(); } }, 1000);
     }
 
-    function updateTimerDisplay() {
-        const display = document.getElementById('countdown');
-        let mins = Math.floor(timeLeft / 60);
-        let secs = timeLeft % 60;
-        display.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    function updateTimer() {
+        const d = document.getElementById('countdown');
+        let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+        d.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft <= 300) d.style.color = 'var(--red)';
     }
 
-    function toggleTimer() { 
-        isPaused = !isPaused; 
-        document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE"; 
-    }
-    
-    function resetTimer() {
-        timeLeft = 1800; isPaused = false;
-        document.getElementById('pauseBtn').innerText = "PAUSE";
-        document.getElementById('countdown').classList.remove('timer-low');
-        updateTimerDisplay();
-    }
+    function toggleTimer() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE"; }
+    function resetTimer() { timeLeft = 1800; isPaused = false; updateTimer(); }
 
     function addLogEntry() {
-        const note = document.getElementById('logNote').value;
-        if (!note) return;
-        const entry = { date: new Date().toLocaleDateString(), text: note };
+        const note = document.getElementById('logNote').value; if (!note) return;
         const history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
-        history.unshift(entry);
+        history.unshift({ date: new Date().toLocaleDateString(), text: note });
         localStorage.setItem('rallyHistory', JSON.stringify(history));
-        document.getElementById('logNote').value = "";
-        renderHistory();
+        document.getElementById('logNote').value = ""; renderHistory();
     }
 
     function renderHistory() {
         const history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
-        document.getElementById('logList').innerHTML = history.map(item => `
-            <div class="history-item"><span style="color:var(--yellow)">[${item.date}]</span> ${item.text}</div>
-        `).join('');
+        document.getElementById('logList').innerHTML = history.map(item => `<div class="history-item"><span style="color:var(--yellow)">[${item.date}]</span> ${item.text}</div>`).join('');
     }
 
     function showQR() {
@@ -234,8 +212,6 @@
         document.getElementById('qr-code').innerHTML = "";
         new QRCode(document.getElementById("qr-code"), { text: window.location.href, width: 200, height: 200 });
     }
-
-    function closeQR() { document.getElementById('qr-modal').style.display = 'none'; }
 
     window.onload = init;
 </script>
