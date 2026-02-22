@@ -48,8 +48,6 @@
         .fuel-result { font-size: 2rem; color: var(--orange); font-weight: bold; text-align: center; margin-top: 10px; }
         footer { margin-top: 50px; padding: 20px; background: #111; border-top: 1px solid #333; font-size: 0.8rem; color: #aaa; line-height: 1.6; }
         .guide-title { color: var(--yellow); font-weight: bold; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; }
-        
-        /* New Tyre Section CSS */
         .tyre-log { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 20px; }
         .tyre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
     </style>
@@ -79,21 +77,21 @@
     <div id="container"></div>
 
     <div class="tyre-log">
-        <h3 style="color:var(--blue); margin-top:0; font-style:italic; font-size:0.9rem;">🏁 STAGE TIRE PRESSURES (BAR)</h3>
+        <h3 style="color:var(--blue); margin-top:0; font-style:italic; font-size:0.9rem;">🏁 STAGE TYRE PRESSURES (BAR)</h3>
         <div class="tyre-grid">
             <div><label style="font-size:0.6rem;">FRONT L</label><input type="number" id="tyreFL" class="form-input" placeholder="0.0" step="0.1"></div>
             <div><label style="font-size:0.6rem;">FRONT R</label><input type="number" id="tyreFR" class="form-input" placeholder="0.0" step="0.1"></div>
             <div><label style="font-size:0.6rem;">REAR L</label><input type="number" id="tyreRL" class="form-input" placeholder="0.0" step="0.1"></div>
             <div><label style="font-size:0.6rem;">REAR R</label><input type="number" id="tyreRR" class="form-input" placeholder="0.0" step="0.1"></div>
         </div>
-        <button class="btn" onclick="(logtyres)" style="width:100%; margin-top:10px; background:var(--blue);">LOG PRESSURES</button>
+        <button class="btn" onclick="logTyres()" style="width:100%; margin-top:10px; background:var(--blue);">LOG PRESSURES</button>
     </div>
 
     <div class="fuel-calc">
         <h3 style="color:var(--orange); margin-top:0; font-style:italic; font-size:0.9rem;">⛽ STAGE FUEL CALCULATOR</h3>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <input type="number" id="stageDist" class="form-input" placeholder="Distance" step="any" oninput="calcFuel()">
-            <input type="number" id="fuelRate" class="form-input" placeholder="Liters per km" step="any" oninput="calcFuel()">
+            <input type="number" id="fuelRate" class="form-input" placeholder="Litres per km" step="any" oninput="calcFuel()">
         </div>
         <div class="fuel-result" id="fuelNeed">0.00 L</div>
     </div>
@@ -112,14 +110,8 @@
         <div class="guide-title">📡 Offline & Data Safety</div>
         Stored in <b>Local Storage</b>. Save to home screen for app icon.
     </div>
-    <div style="margin-bottom: 20px;">
-        <div class="guide-title">🔴 Coding Key</div>
-        <span style="color: var(--red)">■</span> <b>CRITICAL:</b> Safety. 
-        <span style="color: var(--orange)">■</span> <b>HIGH:</b> Performance. 
-        <span style="color: var(--blue)">■</span> <b>STANDARD:</b> Fluids.
-    </div>
     <div style="text-align: center; opacity: 0.4; font-size: 0.6rem; margin-top: 30px;">
-        RODGE QRALLY MISSION CONTROL v3.0 (#107-B)
+        RODGE QRALLY MISSION CONTROL v3.2 (#107-B UK)
     </div>
 </footer>
 
@@ -131,11 +123,11 @@
 <script>
     const factoryData = [
         { label: "Wheel Nut Torque", val: "110 Nm", p: "critical" },
-        { label: "Cold Tire Pressure", val: "2.0 BAR", p: "critical" },
-        { label: "Engine Oil (5W-30)", val: "3.1 Liters", p: "standard" },
-        { label: "Gearbox Oil (75W-90)", val: "1.7 Liters", p: "standard" },
+        { label: "Cold Tyre Pressure", val: "2.0 BAR", p: "critical" },
+        { label: "Engine Oil (5W-30)", val: "3.1 Litres", p: "standard" },
+        { label: "Gearbox Oil (75W-90)", val: "1.7 Litres", p: "standard" },
         { label: "Spark Plugs", val: "25 Nm", p: "high" },
-        { label: "Coolant", val: "4.5 Liters", p: "standard" }
+        { label: "Coolant", val: "4.5 Litres", p: "standard" }
     ];
 
     let timeLeft = 1800, isPaused = false, timerInterval;
@@ -149,15 +141,15 @@
         document.getElementById('fuelNeed').innerText = total.toFixed(2) + " L";
     }
 
-    function logTires() {
-        const fl = document.getElementById('tireFL').value || "-";
-        const fr = document.getElementById('tireFR').value || "-";
-        const rl = document.getElementById('tireRL').value || "-";
-        const rr = document.getElementById('tireRR').value || "-";
-        const entry = `Tires (BAR) - FL:${fl} FR:${fr} | RL:${rl} RR:${rr}`;
+    function logTyres() {
+        const fl = document.getElementById('tyreFL').value || "-";
+        const fr = document.getElementById('tyreFR').value || "-";
+        const rl = document.getElementById('tyreRL').value || "-";
+        const rr = document.getElementById('tyreRR').value || "-";
+        const entry = `Tyres (BAR) - FL:${fl} FR:${fr} | RL:${rl} RR:${rr}`;
         addLogEntry(entry);
-        document.getElementById('tireFL').value = ""; document.getElementById('tireFR').value = "";
-        document.getElementById('tireRL').value = ""; document.getElementById('tireRR').value = "";
+        document.getElementById('tyreFL').value = ""; document.getElementById('tyreFR').value = "";
+        document.getElementById('tyreRL').value = ""; document.getElementById('tyreRR').value = "";
     }
 
     function toggleEditMode() { document.getElementById('addForm').style.display = document.getElementById('editToggle').checked ? 'block' : 'none'; renderSpecs(); }
@@ -200,8 +192,6 @@
         custom.splice(idx, 1); localStorage.setItem('customSpecs', JSON.stringify(custom)); renderSpecs();
     }
 
-    function resetChecklist() { if(confirm("Reset checks?")) { localStorage.removeItem('rallyChecks'); renderSpecs(); } }
-    function clearCustomSpecs() { if(confirm("Wipe custom?")) { localStorage.removeItem('customSpecs'); renderSpecs(); } }
     function startClock() { if(timerInterval) clearInterval(timerInterval); timerInterval = setInterval(() => { if (!isPaused && timeLeft > 0) { timeLeft--; updateTimer(); } }, 1000); }
     function updateTimer() {
         const d = document.getElementById('countdown');
