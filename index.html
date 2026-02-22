@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QRALLY | #107-B</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <link rel="icon" type="image/png" href="https://files.websitebuilder.prositehosting.co.uk/02/10/02108289-beff-440a-aa2a-6fcd4f767da3.png">
+    <link rel="apple-touch-icon" href="https://files.websitebuilder.prositehosting.co.uk/02/10/02108289-beff-440a-aa2a-6fcd4f767da3.png">
+    <meta name="apple-mobile-web-app-title" content="QRally">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
     <style>
         :root {
             --bg: #0d0d0d; --card-bg: #1a1a1a; --yellow: #f1c40f;
@@ -42,8 +49,6 @@
         footer { margin-top: 50px; padding: 20px; background: #111; border-top: 1px solid #333; font-size: 0.8rem; color: #aaa; line-height: 1.6; }
         .guide-title { color: var(--yellow); font-weight: bold; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; }
     </style>
-    <link rel="icon" type="image/png" href="INSERT_YOUR_IMAGE_URL_HERE">
-<link rel="apple-touch-icon" href="https://files.websitebuilder.prositehosting.co.uk/02/10/02108289-beff-440a-aa2a-6fcd4f767da3.png">
 </head>
 <body>
 
@@ -87,17 +92,15 @@
 <footer>
     <div style="margin-bottom: 20px;">
         <div class="guide-title">📡 Offline & Data Safety</div>
-        This system works offline. All data (checks, custom specs, and logs) is stored in your device's <b>Local Storage</b>. 
-        It will remain saved even if you close the tab. <i>Caution: Clearing browser cache will wipe all data.</i>
+        This system works offline. All data is stored in your device's <b>Local Storage</b>. 
     </div>
     
     <div style="margin-bottom: 20px;">
         <div class="guide-title">🔴 Coding Key</div>
-        <span style="color: var(--red)">■</span> <b>CRITICAL:</b> Safety & Legal (Torque, Pressures, Brakes).<br>
-        <span style="color: var(--orange)">■</span> <b>HIGH:</b> Performance (Alignment, Suspension, Mapping).<br>
-        <span style="color: var(--blue)">■</span> <b>STANDARD:</b> Consumables (Fluids, Filter types, Plugs).
+        <span style="color: var(--red)">■</span> <b>CRITICAL:</b> Safety & Legal.<br>
+        <span style="color: var(--orange)">■</span> <b>HIGH:</b> Performance.<br>
+        <span style="color: var(--blue)">■</span> <b>STANDARD:</b> Consumables.
     </div>
-
     <div style="text-align: center; opacity: 0.4; font-size: 0.6rem; margin-top: 30px;">
         RODGE QRALLY MISSION CONTROL v2.9.2 (#107-B)
     </div>
@@ -125,7 +128,7 @@
     function calcFuel() {
         const dist = parseFloat(document.getElementById('stageDist').value) || 0;
         const rate = parseFloat(document.getElementById('fuelRate').value) || 0;
-        const total = (dist * rate) * 1.15; // 15% safety buffer
+        const total = (dist * rate) * 1.15; 
         document.getElementById('fuelNeed').innerText = total.toFixed(2) + " L";
     }
 
