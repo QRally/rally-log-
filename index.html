@@ -48,6 +48,10 @@
         .fuel-result { font-size: 2rem; color: var(--orange); font-weight: bold; text-align: center; margin-top: 10px; }
         footer { margin-top: 50px; padding: 20px; background: #111; border-top: 1px solid #333; font-size: 0.8rem; color: #aaa; line-height: 1.6; }
         .guide-title { color: var(--yellow); font-weight: bold; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; }
+        
+        /* New Tire Section CSS */
+        .tire-log { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 20px; }
+        .tire-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
     </style>
 </head>
 <body>
@@ -65,6 +69,7 @@
 
 <div class="content">
     <div class="toggle-container"><span style="font-size: 0.8rem; font-weight: bold; color: var(--blue);">🔧 EDIT / SERVICE MODE</span><label class="switch"><input type="checkbox" id="editToggle" onclick="toggleEditMode()"><span class="slider"></span></label></div>
+    
     <div id="addForm" class="form-box">
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><input type="text" id="newLabel" class="form-input" placeholder="Label"><input type="text" id="newVal" class="form-input" placeholder="Value"></div>
         <select id="newPriority" class="form-select"><option value="standard">Standard (Blue)</option><option value="high">High (Orange)</option><option value="critical">Critical (Red)</option></select>
@@ -73,17 +78,30 @@
 
     <div id="container"></div>
 
+    <div class="tire-log">
+        <h3 style="color:var(--blue); margin-top:0; font-style:italic; font-size:0.9rem;">🏁 STAGE TIRE PRESSURES (BAR)</h3>
+        <div class="tire-grid">
+            <div><label style="font-size:0.6rem;">FRONT L</label><input type="number" id="tireFL" class="form-input" placeholder="0.0" step="0.1"></div>
+            <div><label style="font-size:0.6rem;">FRONT R</label><input type="number" id="tireFR" class="form-input" placeholder="0.0" step="0.1"></div>
+            <div><label style="font-size:0.6rem;">REAR L</label><input type="number" id="tireRL" class="form-input" placeholder="0.0" step="0.1"></div>
+            <div><label style="font-size:0.6rem;">REAR R</label><input type="number" id="tireRR" class="form-input" placeholder="0.0" step="0.1"></div>
+        </div>
+        <button class="btn" onclick="logTires()" style="width:100%; margin-top:10px; background:var(--blue);">LOG PRESSURES</button>
+    </div>
+
     <div class="fuel-calc">
         <h3 style="color:var(--orange); margin-top:0; font-style:italic; font-size:0.9rem;">⛽ STAGE FUEL CALCULATOR</h3>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <input type="number" id="stageDist" class="form-input" placeholder="Distance" step="any" oninput="calcFuel()">
-            <input type="number" id="fuelRate" class="form-input" placeholder="Liters per Unit" step="any" oninput="calcFuel()">
+            <input type="number" id="fuelRate" class="form-input" placeholder="Liters per km" step="any" oninput="calcFuel()">
         </div>
         <div class="fuel-result" id="fuelNeed">0.00 L</div>
     </div>
 
     <div style="display: flex; gap: 10px; margin: 20px 0;"><button class="btn" onclick="resetChecklist()" style="flex: 1; background: #333;">🔄 RESET CHECKLIST</button><button class="btn" onclick="clearCustomSpecs()" style="flex: 1; background: var(--red);">🗑 WIPE CUSTOM</button></div>
-    <div id="history-section" style="border-top: 1px solid #333; padding-top: 20px;"><h2 style="color:var(--yellow); font-style:italic;">MAINTENANCE LOG</h2>
+    
+    <div id="history-section" style="border-top: 1px solid #333; padding-top: 20px;">
+        <h2 style="color:var(--yellow); font-style:italic;">MAINTENANCE LOG</h2>
         <div style="display:flex; gap:10px; margin-bottom:15px;"><input type="text" id="logNote" placeholder="Service note..." class="form-input" style="margin-bottom:0;"><button class="btn" onclick="addLogEntry()" style="background:var(--neon-green); color:#000;">ADD</button></div>
         <div id="logList"></div>
     </div>
@@ -92,17 +110,16 @@
 <footer>
     <div style="margin-bottom: 20px;">
         <div class="guide-title">📡 Offline & Data Safety</div>
-        This system works offline. All data is stored in your device's <b>Local Storage</b>. 
+        Stored in <b>Local Storage</b>. Save to home screen for app icon.
     </div>
-    
     <div style="margin-bottom: 20px;">
         <div class="guide-title">🔴 Coding Key</div>
-        <span style="color: var(--red)">■</span> <b>CRITICAL:</b> Safety & Legal.<br>
-        <span style="color: var(--orange)">■</span> <b>HIGH:</b> Performance.<br>
-        <span style="color: var(--blue)">■</span> <b>STANDARD:</b> Consumables.
+        <span style="color: var(--red)">■</span> <b>CRITICAL:</b> Safety. 
+        <span style="color: var(--orange)">■</span> <b>HIGH:</b> Performance. 
+        <span style="color: var(--blue)">■</span> <b>STANDARD:</b> Fluids.
     </div>
     <div style="text-align: center; opacity: 0.4; font-size: 0.6rem; margin-top: 30px;">
-        RODGE QRALLY MISSION CONTROL v2.9.2 (#107-B)
+        RODGE QRALLY MISSION CONTROL v3.0 (#107-B)
     </div>
 </footer>
 
@@ -128,8 +145,19 @@
     function calcFuel() {
         const dist = parseFloat(document.getElementById('stageDist').value) || 0;
         const rate = parseFloat(document.getElementById('fuelRate').value) || 0;
-        const total = (dist * rate) * 1.15; 
+        const total = (dist * rate) * 1.15; // 15% safety buffer
         document.getElementById('fuelNeed').innerText = total.toFixed(2) + " L";
+    }
+
+    function logTires() {
+        const fl = document.getElementById('tireFL').value || "-";
+        const fr = document.getElementById('tireFR').value || "-";
+        const rl = document.getElementById('tireRL').value || "-";
+        const rr = document.getElementById('tireRR').value || "-";
+        const entry = `Tires (BAR) - FL:${fl} FR:${fr} | RL:${rl} RR:${rr}`;
+        addLogEntry(entry);
+        document.getElementById('tireFL').value = ""; document.getElementById('tireFR').value = "";
+        document.getElementById('tireRL').value = ""; document.getElementById('tireRR').value = "";
     }
 
     function toggleEditMode() { document.getElementById('addForm').style.display = document.getElementById('editToggle').checked ? 'block' : 'none'; renderSpecs(); }
@@ -174,7 +202,7 @@
 
     function resetChecklist() { if(confirm("Reset checks?")) { localStorage.removeItem('rallyChecks'); renderSpecs(); } }
     function clearCustomSpecs() { if(confirm("Wipe custom?")) { localStorage.removeItem('customSpecs'); renderSpecs(); } }
-    function startClock() { timerInterval = setInterval(() => { if (!isPaused && timeLeft > 0) { timeLeft--; updateTimer(); } }, 1000); }
+    function startClock() { if(timerInterval) clearInterval(timerInterval); timerInterval = setInterval(() => { if (!isPaused && timeLeft > 0) { timeLeft--; updateTimer(); } }, 1000); }
     function updateTimer() {
         const d = document.getElementById('countdown');
         let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
@@ -183,12 +211,15 @@
     }
     function toggleTimer() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE"; }
     function resetTimer() { timeLeft = 1800; isPaused = false; updateTimer(); }
-    function addLogEntry() {
-        const note = document.getElementById('logNote').value; if (!note) return;
+    
+    function addLogEntry(customText) {
+        const note = customText || document.getElementById('logNote').value;
+        if (!note) return;
         const history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
         history.unshift({ date: new Date().toLocaleDateString(), text: note });
         localStorage.setItem('rallyHistory', JSON.stringify(history));
-        document.getElementById('logNote').value = ""; renderHistory();
+        if (!customText) document.getElementById('logNote').value = "";
+        renderHistory();
     }
     function renderHistory() {
         const history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
