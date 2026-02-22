@@ -37,8 +37,6 @@
         .form-box { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 20px; display: none; }
         .form-input, .form-select { width: 100%; padding: 12px; margin-bottom: 10px; background: #0d0d0d; color: #fff; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; }
 
-        #searchBar { width: 100%; padding: 15px; margin-bottom: 20px; background: #1a1a1a; border: 1px solid var(--yellow); color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 1rem;}
-        
         .spec-card { background: var(--card-bg); border-left: 6px solid #444; border-radius: 8px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .spec-card.completed { opacity: 0.3; filter: grayscale(1); }
         .critical { border-left-color: var(--red); }
@@ -96,8 +94,6 @@
         <button class="btn" onclick="addNewSection()" style="width:100%; background:var(--blue);">+ ADD TO LIST</button>
     </div>
 
-    <input type="text" id="searchBar" placeholder="🔍 Search specs..." oninput="filter()">
-
     <div id="container"></div>
 
     <div style="display: flex; gap: 10px; margin: 20px 0;">
@@ -116,8 +112,8 @@
 </div>
 
 <footer>
-    <p><b>RODGE QRALLY SYSTEM v2.7 (#107-B)</b></p>
-    <p>Data stored locally. Search filters cards by label or value.</p>
+    <p><b>RODGE QRALLY SYSTEM v2.8 (#107-B)</b></p>
+    <p>Simplified view. Local storage active for specs and logs.</p>
 </footer>
 
 <div id="qr-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; flex-direction:column; justify-content:center; align-items:center;">
@@ -168,27 +164,6 @@
                 </div>
             `;
         }).join('');
-        
-        // Final search sync
-        filter(); 
-    }
-
-    function filter() {
-        const searchInput = document.getElementById('searchBar');
-        if (!searchInput) return;
-        
-        let q = searchInput.value.toLowerCase();
-        let cards = document.getElementsByClassName('spec-card');
-        
-        for (let i = 0; i < cards.length; i++) {
-            let cardContent = cards[i].innerText.toLowerCase();
-            // Force display style change
-            if (cardContent.includes(q)) {
-                cards[i].style.display = "flex";
-            } else {
-                cards[i].style.display = "none";
-            }
-        }
     }
 
     function toggleCheck(index) {
