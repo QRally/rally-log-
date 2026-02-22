@@ -15,7 +15,7 @@
         
         .hero-banner { 
             width: 100%; height: 250px; 
-            background: url('https://files.websitebuilder.prositehosting.co.uk/e8/5a/e85ab935-f9f6-4f68-99a5-33ba7a59181d.jpg') center/cover no-repeat;
+            background: url('1000022227.jpg') center/cover no-repeat;
             border-bottom: 4px solid var(--yellow); position: relative;
         }
         .hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 20px; }
@@ -26,7 +26,6 @@
         .content { padding: 15px; }
         .btn { background: #222; border: 1px solid #444; color: #fff; padding: 12px 15px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
         
-        /* Toggle Switch Styling */
         .toggle-container { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -56,6 +55,8 @@
         
         .history-item { border-bottom: 1px solid #222; padding: 10px 0; color: #ccc; }
         .hidden { display: none; }
+        
+        footer { margin-top: 50px; padding: 20px; background: #111; border-top: 1px solid #333; font-size: 0.75rem; color: #666; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -117,6 +118,16 @@
     </div>
 </div>
 
+<footer>
+    <p><b>QRALLY SYSTEM v2.5 (#107-B)</b></p>
+    <p>This dashboard is a localized web app. Data is stored in this device's browser memory (Local Storage). Clearing your browser cache will reset progress.</p>
+    <p><b>Priority Guide:</b><br>
+    <span style="color: var(--red)">■</span> <b>CRITICAL:</b> Safety items (Torque/Pressure).<br>
+    <span style="color: var(--orange)">■</span> <b>HIGH:</b> Tuning & Performance.<br>
+    <span style="color: var(--blue)">■</span> <b>STANDARD:</b> Fluids & General Reference.</p>
+    <p style="text-align: center; margin-top: 20px; opacity: 0.5;">&copy; 2026 QRALLY MISSION CONTROL</p>
+</footer>
+
 <div id="qr-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; flex-direction:column; justify-content:center; align-items:center;">
     <div id="qr-code" style="background:#fff; padding:20px; border-radius:8px;"></div>
     <button class="btn" style="margin-top:20px; background:var(--red);" onclick="document.getElementById('qr-modal').style.display='none'">CLOSE</button>
@@ -139,8 +150,7 @@
     function toggleEditMode() {
         const isEdit = document.getElementById('editToggle').checked;
         document.getElementById('addForm').style.display = isEdit ? 'block' : 'none';
-        const delBtns = document.querySelectorAll('.del-btn');
-        delBtns.forEach(btn => btn.style.display = isEdit ? 'inline-block' : 'none');
+        renderSpecs();
     }
 
     function renderSpecs() {
@@ -194,8 +204,8 @@
         localStorage.setItem('rallyChecks', JSON.stringify(completed));
     }
 
-    function resetChecklist() { if(confirm("Reset all checks?")) { localStorage.removeItem('rallyChecks'); renderSpecs(); } }
-    function clearCustomSpecs() { if(confirm("Wipe all custom items?")) { localStorage.removeItem('customSpecs'); renderSpecs(); } }
+    function resetChecklist() { if(confirm("Reset checks?")) { localStorage.removeItem('rallyChecks'); renderSpecs(); } }
+    function clearCustomSpecs() { if(confirm("Wipe custom?")) { localStorage.removeItem('customSpecs'); renderSpecs(); } }
 
     function filter() {
         let q = document.getElementById('searchBar').value.toLowerCase();
