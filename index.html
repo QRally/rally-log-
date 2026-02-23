@@ -210,15 +210,29 @@
     function toggleTimer() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE"; }
     function resetTimer() { timeLeft = 1800; isPaused = false; updateTimer(); }
     
-    function addLogEntry(customText) {
-        const note = customText || document.getElementById('logNote').value;
-        if (!note) return;
-        const history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
-        history.unshift({ date: new Date().toLocaleDateString(), text: note });
-        localStorage.setItem('rallyHistory', JSON.stringify(history));
-        if (!customText) document.getElementById('logNote').value = "";
-        renderHistory();
-    }
+function addLogEntry(customText) {
+    // This grabs the note from the input box OR the automatic tyre log
+    const note = customText || document.getElementById('logNote').value;
+    if (!note) return;
+
+    // Load existing history or start fresh
+    const history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
+    
+    // Add the new entry to the top of the list
+    history.unshift({ 
+        date: new Date().toLocaleDateString('en-GB'), // UK Date format
+        text: note 
+    });
+
+    // Save it back to the shared memory
+    localStorage.setItem('rallyHistory', JSON.stringify(history));
+
+    // Clear the input box if it was a manual note
+    if (!customText) document.getElementById('logNote').value = "";
+    
+    // Update the small preview list on the main page
+    renderHistory();
+}
     function renderHistory() {
         const history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
         document.getElementById('logList').innerHTML = history.map(item => `<div class="history-item"><span style="color:var(--yellow)">[${item.date}]</span> ${item.text}</div>`).join('');
