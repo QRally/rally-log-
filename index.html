@@ -95,14 +95,13 @@
         </div>
         <div class="fuel-result" id="fuelNeed">0.00 L</div>
     </div>
-
-    <div style="display: flex; gap: 10px; margin: 20px 0;"><button class="btn" onclick="resetChecklist()" style="flex: 1; background: #333;">🔄 RESET CHECKLIST</button><button class="btn" onclick="clearCustomSpecs()" style="flex: 1; background: var(--red);">🗑 WIPE CUSTOM</button></div>
-    
-    <div id="history-section" style="border-top: 1px solid #333; padding-top: 20px;">
-        <h2 style="color:var(--yellow); font-style:italic;">MAINTENANCE LOG</h2>
-        <div style="display:flex; gap:10px; margin-bottom:15px;"><input type="text" id="logNote" placeholder="Service note..." class="form-input" style="margin-bottom:0;"><button class="btn" onclick="addLogEntry()" style="background:var(--neon-green); color:#000;">ADD</button></div>
-        <div id="logList"></div>
+<div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
+    <div style="display: flex; gap: 10px;">
+        <button class="btn" onclick="resetChecklist()" style="flex: 1; background: #333;">🔄 RESET CHECKLIST</button>
+        <button class="btn" onclick="clearCustomSpecs()" style="flex: 1; background: var(--red);">🗑 WIPE CUSTOM</button>
     </div>
+    <a href="archive.html" class="btn" style="background: var(--blue); text-decoration: none; text-align: center; display: block; padding: 15px;">📜 VIEW ARCHIVE LOGS</a>
+</div>
 </div>
 
 <footer>
