@@ -5,19 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>#107-B | ARCHIVE</title>
     <style>
-        :root { --bg: #0d0d0d; --yellow: #f1c40f; --blue: #3498db; }
+        :root { --bg: #0d0d0d; --yellow: #f1c40f; --blue: #3498db; --red: #e74c3c; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; padding: 20px; }
         .header { border-bottom: 2px solid var(--yellow); padding-bottom: 10px; margin-bottom: 20px; }
-        .history-item { border-bottom: 1px solid #222; padding: 15px 0; font-size: 0.9rem; line-height: 1.4; }
+        .history-item { 
+            border-bottom: 1px solid #222; 
+            padding: 15px 0; 
+            font-size: 0.9rem; 
+            line-height: 1.4; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .log-content { flex: 1; padding-right: 15px; }
         .date { color: var(--yellow); font-weight: bold; font-family: monospace; margin-right: 10px; }
-        .btn-container { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-container { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
         .btn { background: #222; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 6px; text-decoration: none; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
-        .btn-pdf { background: var(--blue); border-color: var(--blue); color: #fff; }
+        .btn-pdf { background: var(--blue); border-color: var(--blue); }
+        .del-entry { color: var(--red); background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 5px 10px; }
 
-        /* PRINT STYLING */
         @media print {
             body { background: #fff; color: #000; padding: 0; }
-            .btn-container, .back-link { display: none; }
+            .btn-container, .back-link, .del-entry { display: none; }
             .history-item { border-bottom: 1px solid #ccc; page-break-inside: avoid; }
             .date { color: #000; }
             .header { border-bottom: 2px solid #000; }
@@ -46,12 +55,25 @@
                 list.innerHTML = "<p style='opacity:0.5;'>No logs found in local memory.</p>";
                 return;
             }
-            list.innerHTML = history.map(item => `
+            list.innerHTML = history.map((item, index) => `
                 <div class="history-item">
-                    <span class="date">[${item.date}]</span> ${item.text}
+                    <div class="log-content">
+                        <span class="date">[${item.date}]</span> ${item.text}
+                    </div>
+                    <button class="del-entry" onclick="deleteEntry(${index})" title="Delete entry">🗑</button>
                 </div>
             `).join('');
         }
+
+        function deleteEntry(index) {
+            if(confirm("Delete this log entry?")) {
+                let history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
+                history.splice(index, 1);
+                localStorage.setItem('rallyHistory', JSON.stringify(history));
+                renderArchive();
+            }
+        }
+
         window.onload = renderArchive;
     </script>
 </body>
