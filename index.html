@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QRALLY | #107-B</title>
+    <title>QRALLY | MISSION CONTROL</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <link rel="icon" type="image/png" href="https://files.websitebuilder.prositehosting.co.uk/02/10/02108289-beff-440a-aa2a-6fcd4f767da3.png">
@@ -50,11 +50,15 @@
         .guide-title { color: var(--yellow); font-weight: bold; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; }
         .tyre-log { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 20px; }
         .tyre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
+        
+        /* QR MODAL STYLING */
+        #qr-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; flex-direction:column; justify-content:center; align-items:center; }
+        #qr-code { background:#fff; padding:20px; border-radius:8px; }
     </style>
 </head>
-<body>
+<body onload="init()">
 
-<div class="hero-banner"><div class="hero-overlay"><h1 style="margin:0; font-size: 2.5rem; font-style: italic; color: var(--yellow);">QRALLY</h1><div style="font-size: 0.8rem; letter-spacing: 2px;">CHASSIS #107-B | MISSION CONTROL</div></div></div>
+<div class="hero-banner"><div class="hero-overlay"><h1 style="margin:0; font-size: 2.5rem; font-style: italic; color: var(--yellow);">QRALLY</h1><div style="font-size: 0.8rem; letter-spacing: 2px;">UNIVERSAL MISSION CONTROL</div></div></div>
 
 <div class="timer-banner">
     <div id="countdown">30:00</div>
@@ -66,7 +70,7 @@
 </div>
 
 <div class="content">
-    <div class="toggle-container"><span style="font-size: 0.8rem; font-weight: bold; color: var(--blue);">🔧 EDIT / SERVICE MODE</span><label class="switch"><input type="checkbox" id="editToggle" onclick="toggleEditMode()"><span class="slider"></span></label></div>
+    <div class="toggle-container"><span>🔧 EDIT / SERVICE MODE</span><label class="switch"><input type="checkbox" id="editToggle" onclick="toggleEditMode()"><span class="slider"></span></label></div>
     
     <div id="addForm" class="form-box">
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><input type="text" id="newLabel" class="form-input" placeholder="Label"><input type="text" id="newVal" class="form-input" placeholder="Value"></div>
@@ -77,14 +81,14 @@
     <div id="container"></div>
 
     <div class="tyre-log">
-        <h3 style="color:var(--blue); margin-top:0; font-style:italic; font-size:0.9rem;">🏁 STAGE TYRE PRESSURES (BAR)</h3>
+        <h3 style="color:var(--blue); margin-top:0; font-style:italic; font-size:0.9rem;">🏁 STAGE TYRE PRESSURES (PSI)</h3>
         <div class="tyre-grid">
-            <div><label style="font-size:0.6rem;">FRONT L</label><input type="number" id="tyreFL" class="form-input" placeholder="0.0" step="0.1"></div>
-            <div><label style="font-size:0.6rem;">FRONT R</label><input type="number" id="tyreFR" class="form-input" placeholder="0.0" step="0.1"></div>
-            <div><label style="font-size:0.6rem;">REAR L</label><input type="number" id="tyreRL" class="form-input" placeholder="0.0" step="0.1"></div>
-            <div><label style="font-size:0.6rem;">REAR R</label><input type="number" id="tyreRR" class="form-input" placeholder="0.0" step="0.1"></div>
+            <input type="number" id="tyreFL" class="form-input" placeholder="FL">
+            <input type="number" id="tyreFR" class="form-input" placeholder="FR">
+            <input type="number" id="tyreRL" class="form-input" placeholder="RL">
+            <input type="number" id="tyreRR" class="form-input" placeholder="RR">
         </div>
-        <button class="btn" onclick="logTyres()" style="width:100%; margin-top:10px; background:var(--blue);">LOG PRESSURES</button>
+        <button class="btn" onclick="logTyres()" style="width:100%; margin-top:10px; background:var(--blue);">LOG PSI PRESSURES</button>
     </div>
 
     <div class="fuel-calc">
@@ -114,34 +118,36 @@
     </div>
 </div>
 
-<footer>
-    <div style="margin-bottom: 20px;">
-        <div class="guide-title">📡 Offline & Data Safety</div>
-        This system works offline. All data is stored in your device's <b>Local Storage</b>.
-    </div>
-    <div style="text-align: center; opacity: 0.4; font-size: 0.6rem; margin-top: 30px;">
-        RODGE QRALLY MISSION CONTROL v3.3 (#107-B UK)
-    </div>
-</footer>
-
-<div id="qr-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; flex-direction:column; justify-content:center; align-items:center;">
-    <div id="qr-code" style="background:#fff; padding:20px; border-radius:8px;"></div>
+<div id="qr-modal">
+    <div id="qr-code"></div>
     <button class="btn" style="margin-top:20px; background:var(--red);" onclick="document.getElementById('qr-modal').style.display='none'">CLOSE</button>
 </div>
 
-<script>
-    const factoryData = [
-        { label: "Wheel Nut Torque", val: "110 Nm", p: "critical" },
-        { label: "Cold Tyre Pressure", val: "2.0 BAR", p: "critical" },
-        { label: "Engine Oil (5W-30)", val: "3.1 Litres", p: "standard" },
-        { label: "Gearbox Oil (75W-90)", val: "1.7 Litres", p: "standard" },
-        { label: "Spark Plugs", val: "25 Nm", p: "high" },
-        { label: "Coolant", val: "4.5 Litres", p: "standard" }
-    ];
+<footer>
+    <div style="margin-bottom: 20px;">
+        <div class="guide-title">📡 Offline & Data Safety</div>
+        All data is stored locally. Share the URL with friends for a clean-slate copy.
+    </div>
+    <div style="text-align: center; opacity: 0.4; font-size: 0.6rem; margin-top: 30px;">
+        QRALLY MISSION CONTROL v3.6 (UNIVERSAL PSI)
+    </div>
+</footer>
 
+<script>
     let timeLeft = 1800, isPaused = false, timerInterval;
 
-    function init() { renderSpecs(); renderHistory(); startClock(); }
+    function init() {
+        if (!localStorage.getItem('customSpecs')) {
+            const defaults = [
+                { label: "Wheel Nut Torque", val: "110 Nm", p: "critical" },
+                { label: "Cold Tyre Pressure", val: "30 PSI", p: "critical" },
+                { label: "Engine Oil", val: "Check Level", p: "standard" },
+                { label: "Gearbox Oil", val: "Check Level", p: "standard" }
+            ];
+            localStorage.setItem('customSpecs', JSON.stringify(defaults));
+        }
+        renderSpecs(); renderHistory(); startClock();
+    }
 
     function calcFuel() {
         const dist = parseFloat(document.getElementById('stageDist').value) || 0;
@@ -155,10 +161,8 @@
         const fr = document.getElementById('tyreFR').value || "-";
         const rl = document.getElementById('tyreRL').value || "-";
         const rr = document.getElementById('tyreRR').value || "-";
-        const entry = `Tyres (BAR) - FL:${fl} FR:${fr} | RL:${rl} RR:${rr}`;
+        const entry = `Tyres (PSI) - FL:${fl} FR:${fr} | RL:${rl} RR:${rr}`;
         addLogEntry(entry);
-        document.getElementById('tyreFL').value = ""; document.getElementById('tyreFR').value = "";
-        document.getElementById('tyreRL').value = ""; document.getElementById('tyreRR').value = "";
     }
 
     function toggleEditMode() { document.getElementById('addForm').style.display = document.getElementById('editToggle').checked ? 'block' : 'none'; renderSpecs(); }
@@ -166,75 +170,81 @@
     function renderSpecs() {
         const container = document.getElementById('container');
         const savedChecks = JSON.parse(localStorage.getItem('rallyChecks') || "[]");
-        const customSpecs = JSON.parse(localStorage.getItem('customSpecs') || "[]");
-        const fullData = [...factoryData, ...customSpecs];
+        const fullData = JSON.parse(localStorage.getItem('customSpecs') || "[]");
         const isEdit = document.getElementById('editToggle').checked;
         container.innerHTML = fullData.map((s, index) => {
             const isDone = savedChecks.includes(index.toString()) ? 'completed' : '';
             return `
-                <div class="spec-card ${s.p} ${isDone}" id="card-${index}">
-                    <div onclick="toggleCheck(${index})" style="flex:1; cursor:pointer;"><div class="spec-label">${s.label}</div><div class="spec-value">${s.val}</div></div>
+                <div class="spec-card ${s.p} ${isDone}">
+                    <div onclick="toggleCheck(${index})" style="flex:1;"><div class="spec-label">${s.label}</div><div class="spec-value">${s.val}</div></div>
                     <div style="display:flex; align-items:center;"><div class="check-box" onclick="toggleCheck(${index})"></div>
-                    ${index >= factoryData.length ? `<button class="del-btn" style="display:${isEdit ? 'inline-block' : 'none'}" onclick="deleteSingle(${index - factoryData.length})">🗑</button>` : ''}</div>
+                    ${isEdit ? `<button class="del-btn" onclick="deleteSingle(${index})">🗑</button>` : ''}</div>
                 </div>`;
         }).join('');
     }
 
-    function toggleCheck(index) {
-        document.getElementById(`card-${index}`).classList.toggle('completed');
-        const completed = Array.from(document.querySelectorAll('.completed')).map(c => c.id.replace('card-', ''));
-        localStorage.setItem('rallyChecks', JSON.stringify(completed));
+    function toggleCheck(idx) {
+        let checks = JSON.parse(localStorage.getItem('rallyChecks') || "[]");
+        const sIdx = idx.toString();
+        if(checks.includes(sIdx)) checks = checks.filter(i => i !== sIdx);
+        else checks.push(sIdx);
+        localStorage.setItem('rallyChecks', JSON.stringify(checks)); renderSpecs();
     }
 
     function addNewSection() {
         const label = document.getElementById('newLabel').value.trim();
         const val = document.getElementById('newVal').value.trim();
         if (!label || !val) return;
-        const customSpecs = JSON.parse(localStorage.getItem('customSpecs') || "[]");
-        customSpecs.push({ label, val, p: document.getElementById('newPriority').value });
-        localStorage.setItem('customSpecs', JSON.stringify(customSpecs));
+        const specs = JSON.parse(localStorage.getItem('customSpecs') || "[]");
+        specs.push({ label, val, p: document.getElementById('newPriority').value });
+        localStorage.setItem('customSpecs', JSON.stringify(specs));
         document.getElementById('newLabel').value = ""; document.getElementById('newVal').value = ""; renderSpecs();
     }
 
     function deleteSingle(idx) {
-        let custom = JSON.parse(localStorage.getItem('customSpecs') || "[]");
-        custom.splice(idx, 1); localStorage.setItem('customSpecs', JSON.stringify(custom)); renderSpecs();
+        const specs = JSON.parse(localStorage.getItem('customSpecs') || "[]");
+        specs.splice(idx, 1); localStorage.setItem('customSpecs', JSON.stringify(specs)); renderSpecs();
     }
 
     function resetChecklist() { if(confirm("Reset checks?")) { localStorage.removeItem('rallyChecks'); renderSpecs(); } }
-    function clearCustomSpecs() { if(confirm("Wipe custom?")) { localStorage.removeItem('customSpecs'); renderSpecs(); } }
-    
+    function clearCustomSpecs() { if(confirm("Wipe all specs?")) { localStorage.removeItem('customSpecs'); renderSpecs(); } }
+
     function startClock() { 
         if(timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(() => { 
-            if (!isPaused && timeLeft > 0) { timeLeft--; updateTimer(); } 
-        }, 1000); 
+        timerInterval = setInterval(() => { if (!isPaused && timeLeft > 0) { timeLeft--; updateTimer(); } }, 1000); 
     }
-    
     function updateTimer() {
         const d = document.getElementById('countdown');
         let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
         d.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-        d.style.color = timeLeft <= 300 ? 'var(--red)' : 'var(--neon-green)';
     }
     function toggleTimer() { isPaused = !isPaused; document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE"; }
     function resetTimer() { timeLeft = 1800; isPaused = false; updateTimer(); }
-    
-    function addLogEntry(customText) {
-        const note = customText || document.getElementById('logNote').value;
+
+    function addLogEntry(t) {
+        const note = t || document.getElementById('logNote').value;
         if (!note) return;
         const history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
         history.unshift({ date: new Date().toLocaleDateString('en-GB'), text: note });
         localStorage.setItem('rallyHistory', JSON.stringify(history));
-        if (!customText) document.getElementById('logNote').value = "";
+        if (!t) document.getElementById('logNote').value = "";
         renderHistory();
     }
     function renderHistory() {
         const history = JSON.parse(localStorage.getItem('rallyHistory') || "[]");
-        document.getElementById('logList').innerHTML = history.map(item => `<div class="history-item"><span style="color:var(--yellow)">[${item.date}]</span> ${item.text}</div>`).slice(0, 5).join('');
+        document.getElementById('logList').innerHTML = history.slice(0, 5).map(item => `<div><span style="color:var(--yellow)">[${item.date}]</span> ${item.text}</div>`).join('');
     }
-    function showQR() { document.getElementById('qr-modal').style.display = 'flex'; document.getElementById('qr-code').innerHTML = ""; new QRCode(document.getElementById("qr-code"), { text: window.location.href, width: 200, height: 200 }); }
-    window.onload = init;
+    
+    // RESTORED SHARE LOGIC
+    function showQR() { 
+        document.getElementById('qr-modal').style.display = 'flex'; 
+        document.getElementById('qr-code').innerHTML = ""; 
+        new QRCode(document.getElementById("qr-code"), { 
+            text: window.location.href, 
+            width: 200, 
+            height: 200 
+        }); 
+    }
 </script>
 </body>
 </html>
