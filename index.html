@@ -139,9 +139,8 @@
     function init() {
         if (!localStorage.getItem('customSpecs')) {
             const defaults = [
-                { label: "Wheel Nut Torque", val: "110 Nm", p: "critical" },
-                { label: "Cold Tyre Pressure", val: "30 PSI", p: "critical" },
-            
+                { label: "Example", val: "110 Nm", p: "critical" },
+                
             ];
             localStorage.setItem('customSpecs', JSON.stringify(defaults));
         }
