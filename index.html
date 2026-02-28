@@ -19,7 +19,7 @@
             --neon-green: #00ff00; --done-grey: #333;
         }
         body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; padding: 0; margin: 0; padding-bottom: 50px; }
-        .hero-banner { width: 100%; height: 250px; background: url('https://files.websitebuilder.prositehosting.co.uk/7a/1f/7a1f8a1b-e70d-43b4-a1a1-3ce6dcb952e1.png') center/cover no-repeat; border-bottom: 4px solid var(--yellow); position: relative; }
+        .hero-banner { width: 100%; height: 250px; background: url('https://files.websitebuilder.prositehosting.co.uk/e8/5a/e85ab935-f9f6-4f68-99a5-33ba7a59181d.jpg') center/cover no-repeat; border-bottom: 4px solid var(--yellow); position: relative; }
         .hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 20px; }
         .timer-banner { background: #000; color: var(--neon-green); padding: 20px; text-align: center; font-family: 'Courier New', monospace; border-bottom: 1px solid #333; }
         #countdown { font-size: 3.5rem; font-weight: bold; display: block; }
@@ -129,7 +129,7 @@
         All data is stored locally. Share the URL with friends for a clean-slate copy.
     </div>
     <div style="text-align: center; opacity: 0.4; font-size: 0.6rem; margin-top: 30px;">
-       RODGE QRALLY MISSION CONTROL v3.6 (UNIVERSAL)
+        QRALLY MISSION CONTROL v3.6 (UNIVERSAL PSI)
     </div>
 </footer>
 
@@ -139,8 +139,10 @@
     function init() {
         if (!localStorage.getItem('customSpecs')) {
             const defaults = [
-                { label: "Example", val: "110 Nm", p: "critical" },
-                
+                { label: "Wheel Nut Torque", val: "110 Nm", p: "critical" },
+                { label: "Cold Tyre Pressure", val: "30 PSI", p: "critical" },
+                { label: "Engine Oil", val: "Check Level", p: "standard" },
+                { label: "Gearbox Oil", val: "Check Level", p: "standard" }
             ];
             localStorage.setItem('customSpecs', JSON.stringify(defaults));
         }
